@@ -30,6 +30,7 @@ rm (list = ls ())
 
 N<-1000
 cont<-0
+?replicate
 M<-matrix(c(rep(0,36)), nrow =6, ncol = 6, dimnames #matrix usada para testar a rotina
           = list(c("D1.1","D1.2","D1.3","D1.4","D1.5","D1.6"),
                  c("D2.1","D2.2","D2.3","D2.4","D2.5","D2.6")))
