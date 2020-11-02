@@ -12,7 +12,7 @@
 
 #Faca o item 1. agora no R por meio de simulacoes do experimento aleatorio em
 #questao. Dica: ha dois eventos em quest~ao, o fato do aluno saber ou nao a
-# questao e ele acertar ou n~ao, dado que sabe ou n~ao.
+# questao e ele acertar ou n~ao, dado que sabe ou nao.
 
 A<-c("Acertar","Nao Acertar")
 S<-c("Saber","Nao Saber")

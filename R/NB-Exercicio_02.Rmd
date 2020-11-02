@@ -1,0 +1,26 @@
+---
+title: "LISTA DE EXERCICIO 02 - Notebook"
+autor: "Marcel Quintela"
+output:
+  html_document:
+    df_print: paged
+---
+# Questão 1
+
+**Um aluno responde a uma questao de multipla escolha com 4 alternativas, com
+uma so correta. A probabilidade de que ele saiba a resposta certa da questao
+e de 30%. Se ele nao sabe a resposta, existe a possibilidade de ele acertar no
+chute". Não existe a possibilidade de ele obter a resposta certa por cola".
+Qual e a probabilidade de ele acertar a questão?**
+
+Faça o item 1. agora no R por meio de simulacoes do experimento aleatorio em
+questão. Dica: ha dois eventos em questão, o fato do aluno saber ou nao a 
+questão e ele acertar ou não, dado que sabe ou não. 
+
+```{r Definir Eventos}
+# Sejam os Eventos
+A<-c("Acertar","Nao Acertar")
+S<-c("Saber","Nao Saber")
+```
+
+
