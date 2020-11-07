@@ -59,7 +59,7 @@ legend(x=3.7, y=1, legend="P(X>=x)=0,90", bty="n", cex=.6, text.col="red")
 #ou
 sum(dbinom(c(5:10),10,0.4))
 
-# Grafico FDP de X
+# Grafico FP de X
 plot(c(0:10),dbinom(c(0:10),10,0.4), type="h",cex=1,bty="n", pch=19,
      xlab="x", ylab="p(x)",main="X ~ Binomial(10,0.4)")
 
@@ -80,6 +80,6 @@ a<-sum(dbinom(2:10,10,.2)) #P(X>=2)
 b<-sum(dbinom(1:10,10,.2)) #P(X>=1)
 a/b
 
-# Grafico FDP de X
+# Grafico FP de X
 plot(c(0:10),dbinom(c(0:10),10,0.2), type="h",cex=1,bty="n", pch=19,
      xlab="x", ylab="p(x)",main="X ~ Binomial(10,0.2)")
