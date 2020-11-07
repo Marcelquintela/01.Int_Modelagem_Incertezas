@@ -70,10 +70,15 @@ plot(c(0:10),dbinom(c(0:10),10,0.4), type="h",cex=1,bty="n", pch=19,
 # a probabilidade de que pelo menos dois falharam?  Use um modelo probabilistico e faca os calculos das
 # probabilidades no R usando funcoes do modelo.
 
-#P(X>=2) X~Binom(10,0.2)
-1-pbinom(1,10,0.2)
+#P(X>=2|X>=1) X~Binom(10,0.2)
+a<-pbinom(1,10,0.2,lower.tail = FALSE) #P(X>=2) --> 1-pbinom(1,10,0.2)
+b<-pbinom(0,10,0.2,lower.tail = FALSE) #P(X>=1) --> 1-pbinom(0,10,0.2)
+a/b
+
 #ou
-sum(dbinom(c(2:10),10,0.2))
+a<-sum(dbinom(2:10,10,.2)) #P(X>=2)
+b<-sum(dbinom(1:10,10,.2)) #P(X>=1)
+a/b
 
 # Grafico FDP de X
 plot(c(0:10),dbinom(c(0:10),10,0.2), type="h",cex=1,bty="n", pch=19,
