@@ -1,0 +1,365 @@
+---
+title: "LISTA DE EXERCICIO 05"
+Professora: Kelly Cristina M. Goncalves
+Disciplina: Introducao a Modelagem de Incertezas
+Aluno: Marcel Dantas de Quintela
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    code_download: true
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# Variáveis aleatórias contínuas: alguns Modelos Probabilísticos
+
+::: {style="text-align: right; color:Red"}
+Aluno: MARCEL DANTAS DE QUINTELA
+:::
+
+## Questão 1
+
+Para cada cliente que entra na fila do caixa de uma loja de roupas,
+temos que:
+
+-   O tempo de espera na fila segue uma distribuição de probabilidade
+    exponencial com média de 5 minutos;
+
+-   O tempo de atendimento segue uma distribuiçãoo de probabilidade
+    exponencial com média de 5 minutos;
+
+-   Esses dois tempos são v.a.'s independentes.
+
+Para a variável **"tempo total do cliente no caixa"** - incluindo a
+espera na fila e o atendimento --, responda:
+
+### Respostas - Questão 1 {style="color: red"}
+
+> **Letra** **a.** Que modelo probabilístico seria adequado para esta
+> variável? Justifique sua resposta.
+>
+> Como se deseja estudar a distribuição do tempo entre os clientes da
+> loja e considerando que a variável de interrese tem natureza contínua
+> dentro de contagens sucessivas de um processo de Paisson, justifica-se
+> a escolha do Modelo Exponencial como mais adequado para descrever o
+> tempo total do cliente no caixa.
+
+> **Letra** **b.** Calcule a probabilidade de que esse tempo ultrapasse
+> um limite aceitável de 10 minutos. Dica: qual a distribuição de soma
+> v.a.'s com distribuição Exponencial?
+>
+> Sejam:
+>
+> -   X v.a. tempo de espera na fila do caixa de uma loja de roupas,
+>     cuja distribuição segue $X \sim Exp(1/5)$;
+>
+> -   Y v.a. tempo de espera de atendimento de uma loja de roupas, cuja
+>     distribuição segue $Y \sim Exp(1/5)$; e
+>
+> Sendo X e Y v.a. independentes, temos:
+>
+> -   Z v.a. o tempo total de espera \$ Z= (X+Y) \$, onde
+>     $Z \sim Gama(n=2,\lambda= 1/5)$
+>
+>     $P(Z>10)=?$
+
+```{r Q1.b}
+ pgamma(10,shape=2,rate=1/5,lower.tail=FALSE) 
+```
+
+## Questão 2
+
+Para que um satélite possa ser corretamente controlado, a distância
+entre ele e o alvo tem de ser menor que 6, 6 pés. Neste caso
+considera-se que houve um sucesso. Admitindo que o alvo está localizado
+na origem de um determinado eixo, a posição do satélite (em pés) ao
+longo desse eixo se comporta segundo uma distribuição Normal com média
+zero e desvio padrão igual a 4. Nessas condições:
+
+a.  Calcule a probabilidade de falha no controle do satélite.
+
+b.  Quando 5 satélites são lançados, qual a probabilidade de se obter
+    exatamente 3 sucessos?
+
+### Respostas - Questão 2 {style="color: red"}
+
+> Letra **a.** Calcule a probabilidade de falha no controle do satélite.
+
+Seja **X** v.a. representa a distância em pés entre um satélite e um
+determinado eixo, cuja distribuição segue $X \sim N(\mu=0,\sigma^2=16)$
+
+Considerando que estamos trabalhando com distâncias é conveniente
+represenrtarmos as probabilidades da v.a. como o módulo da v.a, logo:
+
+$$
+P(\lvert X\lvert >6,6)=P(\lvert Z\lvert>{6,6\over 4})
+$$
+
+```{r Q2.a1, echo=TRUE}
+# Problabilidade a partir do modelo
+(p <- pnorm(6.6,mean=0,sd=sqrt(16),lower.tail = FALSE)*2)
+```
+
+```{r Q2.a2, echo=TRUE}
+# Integrate normal padrão
+p1 <- integrate(function(x) {1/sqrt(2*pi)*exp(-x^2/2)},lower=-6.6/4,upper=6.6/4)
+1- p1$value
+```
+
+```{r Q2.a3, echo=TRUE}
+# ILUSTRANDO
+x=seq(-17,17,length=1000)
+y=dnorm(x, mean=0,sd=sqrt(16))
+x1=seq(-16,-6.6,length=500);x2=seq(6.6,16,length=500)
+y1=dnorm(x1, mean=0, sd=sqrt(16));y2=dnorm(x2, mean=0, sd=sqrt(16))
+
+plot(x,y,xlab="x",ylab="f(x)",type="l", lwd=2, col="blue", 
+     main="Probabilidades do Sistema")
+polygon(c(-16,x1,-6.6),c(0,y1,0),col="gray")
+polygon(c(6.6,x2,16),c(0,y2,0),col="gray")
+text(0, 0.045,paste0("P(-6,6 < X <6.6)\n", round(1-p,5)))
+text(-11, 0.025,paste0("P(X<-6,6)\n",round(p/2,5)))
+text( 11, 0.025,paste0("P(X<-6,6)\n",round(p/2,5)))
+abline(h=0)
+abline(v=0,lty=2)
+```
+
+> Letra **b.** Quando 5 satélites são lançados, qual a probabilidade de
+> se obter exatamente 3 sucessos?
+
+Seja **Z** v.a. representa o nº de sucessos em 5 lançamentos de
+satélites, onde $Z \sim Binomial(n=5,p^*=0.9)$ ,
+$^*P(sucesso)=1 - [P(\lvert X\lvert >6,6)]\cong 0.90$
+
+$$
+P(Z=z)={n\choose z} p^n (1-p)^{z-n}
+$$
+
+$$
+P(Z=3)={5\choose 3} 0.9^3 (0.1)^2
+$$
+
+```{r Q2.b}
+dbinom(3,5,0.9) # P(Z=3)
+```
+
+## Questão 3
+
+Uma instituição de sáude, preocupada com a má alimentação das crianças,
+deseja realizar uma pesquisa para investigar o número de crianças obesas
+numa determinada região, através do índice de massa corpórea (IMC).
+Sabe-se que o IMC das crianças nesta região segue uma distribuição
+Normal com média 21.5 e desvio padrão de 2, e indivíduos com IMC
+superior a 23 são considerados obesos.
+
+a.  Calcule a probabilidade de uma criança apresentar o IMC entre 20.5
+    e 22.
+b.  Qual a probabilidade de uma criança ser considerada obesa?
+c.  Em uma amostra aleatória de 20 crianças, qual a probabilidade de que
+    pelo menos 15 dessas crianças sejam obesas?
+d.  Qual o IMC a partir do qual estão as 10% das crianças com menor IMC
+    na região?
+
+### Respostas - Questão 3 {style="color: red"}
+
+Seja **X** v.a. representa o IMC de crianças, cuja distribuição segue
+$X \sim N(\mu=21.5,\sigma^2=2^2)$
+
+> **Letra a.** Calcule a probabilidade de uma criança apresentar o IMC
+> entre 20.5 e 22.
+>
+> $P(20.5<X<22)=?$
+
+```{r Q3.a}
+
+pnorm(22,mean=21.5,sd=2) - pnorm(20.5,mean=21.5,sd=2)
+```
+
+> **Letra b.** Qual a probabilidade de uma criança ser considerada
+> obesa?
+>
+> $P(X>23)=?$
+
+```{r Q3.b}
+
+pnorm(23,mean=21.5,sd=2, lower.tail = FALSE )
+# 1- pnorm(23,mean=21.5,sd=2)
+```
+
+> **Letra c.** Em uma amostra aleatória de 20 crianças, qual a
+> probabilidade de que pelo menos 15 dessas crianças sejam obesas?
+>
+> Y v.a. que representa o nº de crianças obesas, cujo distribuição segue
+> $Y \sim Binomial(20;P(X>23))$
+>
+> $P(Y\geq y)=\sum \limits_{y=15}^{20} {20\choose y} P(X>23)^y (1-P(X>23))^{20-y}$
+
+```{r Q3.c}
+
+p<-pnorm(23,mean=21.5,sd=2, lower.tail = FALSE )
+#P(Y>14)=P(Y>=15)
+pbinom(14,20,p,lower.tail = FALSE)
+```
+
+> **Letra d.** Qual o IMC a partir do qual estão as 10% das crianças com
+> menor IMC na região?
+>
+> $P(X\leq x)=0.10$
+
+```{r Q3.d}
+qnorm(0.1,mean=21.5,sd=2)
+```
+
+## Questão 4
+
+No R, digite os seguintes comandos:
+
+> install.packages("flexmix")\
+> require(flexmix)\
+> data("Nclus")\
+> Nclus = data.frame(Nclus)\
+> View(Nclus)\
+> hist(Nclus\$X1)\
+> hist(Nclus\$X2)\
+> plot(Nclus\$X1,Nclus\$X2) \# caso fossemos usar uma regressão
+
+Pede-se: interprete os gráficos que aparecem, informando que tipo de
+modelo poderia ser adequado para modelar a variável $X_1$ e $X_2$,
+justificando sua resposta.
+
+```{r}
+if (!require("flexmix")) install.packages("flexmix", dependencies = TRUE, INSTALL_opts = '--no-lock')
+require(flexmix)
+data("Nclus")
+Nclus = data.frame(Nclus)
+```
+
+```{r}
+#View(Nclus)
+```
+
+```{r}
+hist(Nclus$X1)
+hist(Nclus$X2)
+plot(Nclus$X1,Nclus$X2) # caso fossemos usar uma regressão
+```
+
+### Respostas - Questão 4 {style="color: red"}
+
+A partir das análises gráficas as variáveis apresentadas não seria
+possível acirmar que alguama delas, mesmo preliminarmente, indicasse se
+assemelar a alguma distribuiçao de probabilidade definida. A aparente
+bimodalidade aparente pode ser um dos fatores da indefinição da
+distribuição de probabilidade, indicando ainda a possibilidade de
+mistura de amostras de poulações distintas, falhas na coleta ou mesmo
+indicando a necessidade de tranformações das variáveis originais.
+
+## Questão 5
+
+Há o interesse em analisar o número de pessoas que recorrem ao balcão de
+informações de um aeroporto ao longo de um dia. Um dos balcões funciona
+de 0h às 06h (ou seja, 25% do dia), enquanto o outro funciona no tempo
+restante. Sabe-se que, o número de usuários que recorrem ao balcão que
+fica aberto de 0 às 6h segue uma variável aleatória Poisson com média λ
+= 3 pessoas por hora, enquanto o número de usuários que recorrem ao
+balcão no horário restante segue um modelo Poisson com média de chegada
+λ = 10 pessoas por hora. Calcule a probabilidade de que entre 10 e 15
+pessoas recorrerão ao balcão de informações em uma hora qualquer.
+
+### Respostas - Questão 5 {style="color: red"}
+
+-   **X:** nº de pessoas que recorren ao Balcão A (funciona das 0h às
+    06h), $X \sim Poisson(\lambda=3)$
+
+-   **Y**: nº de pessoas que recorrem ao Balcão B (funciona das 06h às
+    0h), $Y \sim Poisson(\lambda=10)$
+
+-   **Z**: número de pessoas que procuram informações em qualquer balcão
+    em uma hora qualquer,
+    $Z \sim Poisson(\lambda_x=3*6/24+\lambda_y=10*18/24)$
+
+    $$
+    P(10\le Z \le 15)=?
+    $$
+
+    ```{r Q5}
+    L<-3*6/24+10*18/24
+    ppois(15,L)-ppois(9,L) 
+    ```
+
+## Questão 6
+
+Analisando o dado usado em aula de notas de alunos em provas de
+Matemática, Inglês e História, indique que modelo você usaria para
+modelar as notas transformadas em cada uma das provas (como consta no
+comando abaixo) e como você obteria de uma forma geral os parâmetros do
+modelo que se adequam ao dado. Justifique sua resposta. Para iniciar sua
+análise, digite os seguintes comandos no R:
+
+> dado = read.csv("Marks.csv")\
+> View(dado)\
+> dado = dado/100 \# transformando o dado para outra escala\
+> hist(dado\$Maths_Marks,freq=FALSE,bty="n",main="Math",xlab="",ylab="Densidade")\
+> hist(dado\$English_Marks,freq=FALSE,bty="n",main="Ing",xlab="",ylab="Densidade")\
+> hist(dado\$History_Marks,freq=FALSE,bty="n",main="Hist",xlab="",ylab="Densidade")
+
+```{r}
+dado = read.csv("Marks.csv")
+#View(dado)
+dado = dado/100 #transformando o dado para outra escala
+hist(dado$Maths_Marks,freq=FALSE,bty="n",main="Math",xlab="",ylab="Densidade")
+hist(dado$English_Marks,freq=FALSE,bty="n",main="Ing",xlab="",ylab="Densidade")
+hist(dado$History_Marks,freq=FALSE,bty="n",main="Hist",xlab="",ylab="Densidade")
+```
+
+### Respostas - Questão 6 {style="color: red"}
+
+Os dados da variável Math aparentam seguir uma distribuição simétrica
+centrada na média, apesar da necessidade de confirmação, esses dados se
+assemelham a uma distribuição normal. As demais variáveis apresentam
+assimetria e caudas mais densas se distanciando da distribuição normal.
+Contudo diante da natureza da tranformação dos dados originais em
+percentual o modelo uma Beta seria descrever todas as três variáveis.
+
+## Questão 7
+
+No dado diabetes do pacote faraway usado em aula, estamos interessados
+na variável hdl que representa o nível do colesterol HDL nos indivíduos.
+Digite os comandos abaixo no R, analise os gráficos e indique que modelo
+você usaria para esse dado, justificando sua resposta.
+
+> require(faraway)\
+> data(diabetes)\
+> View(diabetes)\
+> hist(diabetes\$hdl,freq=FALSE)\
+> curve(dnorm(x,mean(diabetes\$hdl,na.rm=TRUE),sd(diabetes\$hdl,na.rm=TRUE)),
+> add=TRUE)\
+> boxplot(diabetes\$hdl)\
+> qqnorm(diabetes\$hdl)\
+> qqline(diabetes\$hdl)
+
+```{r}
+require(faraway)
+data(diabetes)
+#View(diabetes)
+hist(diabetes$hdl,freq=FALSE)
+curve(dnorm(x,mean(diabetes$hdl,na.rm=TRUE),sd(diabetes$hdl,na.rm=TRUE)), add=TRUE)
+boxplot(diabetes$hdl)
+qqnorm(diabetes$hdl)
+qqline(diabetes$hdl)
+```
+
+### Respostas - Questão 7 {style="color: red"}
+
+Para os dados de hdl seria pridente utilizar o modelo Normal. Mesmo o
+qqplot mostrando afastamento nas extremidades, o que é corroborado no
+box-blot a existencia de medidas extremas, sugerindo tratamento ou
+remoção de outliers. Podendo se testar a aderência a distribuição normal
+por meio de testes de normalidade.
+
+```{r Q7}
+shapiro.test(diabetes$hdl)
+```

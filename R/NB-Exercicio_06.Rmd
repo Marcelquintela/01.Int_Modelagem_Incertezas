@@ -1,0 +1,406 @@
+---
+title: "LISTA DE EXERCICIO 06"
+Professora: Kelly Cristina M. Goncalves
+Disciplina: Introducao a Modelagem de Incertezas
+Aluno: Marcel Dantas de Quintela
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    code_download: true
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+# Variáveis aleatórias multidimensionais
+
+::: {style="text-align: right; color:Red"}
+Aluno: MARCEL DANTAS DE QUINTELA
+:::
+
+## Questão 1
+
+Duas roletas idênticas, que podem resultar nos números 1, 2 ou 3 com
+igual probabilidade, serão colocadas para rodar simultaneamente. Nesse
+contexto, defina as seguintes variáveis: $X$: menor número observado
+entre os resultados das duas roletas, $Y$: maior número observado entre
+os resultados das duas roletas.
+
+a.  Obtenha a função de probabilidade conjunta de X e Y com suas funções
+    de probabilidades marginais.
+
+b.  Calcule o valor esperado e variância de $Y-X$.
+
+c.  Calcule a covariância entre X e Y.
+
+d.  X e Y são variáveis independentes? Justique sua resposta.
+
+### Respostas - Questão 1 {style="color: red"}
+
+::: {#RQ1 style="color: black"}
+> Os possíveis resultados das roletas são os seguintes:
+>
+> $(1,1) (1,2) (1,3) (2,1) (2,2) (2,3) (3,1) (3,2) (3,3)$
+:::
+
+::: {#RQ1a style="color: black"}
+### **Letra** **a.** {style="color: black"}
+
+Construindo a matriz de possiveis resultados: Como X é o menor e Y o
+maior número, observados nos resultados das roletas então, onde $X>Y$
+será 0(zero).<br/> As demais células são preencidas com as quantidades
+ocorridas de menor e maior valor entre os resultados.
+
+| **X / Y**  | **1** | **2** | **3** | **Sum(Y)** |
+|:----------:|:-----:|:-----:|:-----:|:----------:|
+|   **1**    |   1   |   2   |   2   |    *5*     |
+|   **2**    |   0   |   1   |   2   |    *3*     |
+|   **3**    |   0   |   0   |   1   |    *1*     |
+| **Sum(X)** |  *1*  |  *3*  |  *5*  |  ***9***   |
+
+```{r Q1.a}
+a<-matrix(c(1,0,0,2,1,0,2,2,1),ncol=3)
+a
+
+p<- prop.table(a)               # Matrix de probabilidades
+MASS::fractions(p)              # Formato de fração
+sum(p)                          # Somatório tem que ser 1
+MASS::fractions(addmargins(p))  # Apresentação da Matriz de probalidades com as Marginais
+
+apply(p,1,sum)                  # Probabilidade Marginal de X 
+apply(p,2,sum)                  # Probabilidade Marginal de Y
+
+```
+:::
+
+::: {#RQ1b style="color:black"}
+### **Letra b.** {style="color:black"}
+
+-   Esperça de (Y-X):
+
+    $$
+    E(Y-X)= E(Y)-E(X)
+    $$
+
+    $E(Y)=\sum_{y=1}^3 y \cdot p(y)= 1\cdot \frac{1}{9} +2\cdot \frac{3}{9} +3\cdot \frac{5}{9}=\frac{22}{9}$
+
+    ```{r b1}
+    MASS::fractions(EY<-(sum(c(1,2,3)*apply(p,2,sum))))
+    ```
+
+    $E(X)=\sum_{x=1}^3 x \cdot p(x)= 1\cdot \frac{5}{9} +2\cdot \frac{3}{9} +3\cdot \frac{1}{9}=\frac{14}{9}$
+
+    ```{r b2}
+    MASS::fractions(EX<-(sum(c(1,2,3)*apply(p,1,sum))))
+    ```
+
+    $$
+    E(Y-X)=\frac{22-14}{9}=\frac{8}{9}
+    $$
+
+    ```{r b3}
+    MASS::fractions(sum(c(1,2,3)*apply(p,2,sum))-sum(c(1,2,3)*apply(p,1,sum)))
+    ```
+
+-   Variância de (Y-X):
+
+    $$
+    Var(Y-X)= Var(Y)+Var(X)-2Cov(XY)\\
+    = [E(Y^2)-E(Y)^2]+[E(X^2)-E(X)^2]-2[E(XY)-E(X)E(Y)]
+    $$
+
+    $E(Y^2)=\sum_{y=1}^3 y^2 \cdot p(y)= 1^2\cdot \frac{1}{9} +2^2\cdot \frac{3}{9} +3^3\cdot \frac{5}{9}=\frac{58}{9}$
+
+    ```{r b4}
+    MASS::fractions(EY2<-(sum((c(1,2,3)^2)*apply(p,2,sum))))
+    ```
+
+    $E(X^2)=\sum_{x=1}^3 x^2 \cdot p(x)= 1^2\cdot \frac{5}{9} +2^2\cdot \frac{3}{9} +3^2\cdot \frac{1}{9}=\frac{26}{9}$
+
+    ```{r b5}
+    MASS::fractions(EX2<-(sum((c(1,2,3)^2)*apply(p,1,sum))))
+    ```
+
+    $E(XY)=\sum_{x=1}^3\sum_{y=1}^3 x\cdot y\cdot p(x,y)= 1\cdot 1\cdot \frac{1}{9} +1\cdot 2\cdot \frac{2}{9} +\cdots+3\cdot 3\cdot \frac{1}{9}=\frac{36}{9}$
+
+    ```{r b6}
+    (EXY<-c(1,2,3)%*% p %*%c(1,2,3))
+    ```
+
+    Então:$$
+    Var(Y-X)\\
+    = [E(Y^2)-E(Y)^2]+[E(X^2)-E(X)^2]-2[E(XY)-E(X)E(Y)]\\
+    =\bigg(\frac{58}{9}-\Big( \frac{22}{9}\Big)^2\bigg)+\bigg(\frac{26}{9}-\Big( \frac{14}{9}\Big)^2\bigg)-2\bigg(4-\frac{14}{9}\cdot\frac{22}{9}\bigg)\\
+    0.4691358 + 0.4691358-2\times 0.1975309 = 0.5432099  
+    $$
+
+    ```{r b7}
+    (EY2-EY^2)+(EX2-EX^2)-2*(4-EX*EY)
+    rm(list = ls())
+    ```
+:::
+
+::: {#RQ1c style="color:black"}
+### **Letra c.** {style="color:black"}
+
+-   Covariância entre X e Y:
+
+    $$
+    Cov(XY)= E(XY)-E(X)E(Y)
+    $$
+
+    $E(XY)-E(X)E(Y)=\bigg(4-\frac{14}{9}\cdot\frac{22}{9}\bigg)$
+
+    $$
+    Cov(XY)=0.1975309 
+    $$
+:::
+
+::: {#RQ1d style="color:black"}
+### **Letra d.** {style="color:black"}
+
+-   Tomemos a matriz de proabilidades:
+
+    | **X / Y** | **1** | **2** | **3** | $P(X=x)$ |
+    |:---------:|:-----:|:-----:|:-----:|:--------:|
+    |   **1**   |  1/9  |  2/9  |  2/9  |  *5/9*   |
+    |   **2**   |   0   |  1/9  |  2/9  |  *3/9*   |
+    |   **3**   |   0   |   0   |  1/9  |  *1/9*   |
+    | $P(Y=y)$  | *1/9* | *3/9* | *5/9* |    1     |
+
+    Além da $cov(XY)\neq0$, existem pares como:
+
+    $P(X=2,Y=3)=\frac{2}{9}\neq P(X=2)P(Y=3)=\frac{5}{27}$
+
+    implicando que X e Y [*não são Independentes.*]{.ul}
+:::
+
+## Questão 2
+
+Um estudo sobre reconhecimento de dígitos de 1 a 5 para classicação,
+sabe-se que alguns dígitos em geral são mais escritos pelos usuários que
+outros. Suponha que a probabilidade esperada para os dígitos 1, 2, 3, 4
+e 5 é de 0.1, 0.15, 0.05, 0.2 e 0.5, respectivamente.
+
+a.  uma amostra aleatória com 100 dígitos, calcule a probabilidade de
+    que 11 dígitos sejam classicados como 1, 12 como 2, 3 como 3, 18
+    como 4 e 56 como 5. Use um modelo probabilístico no R para este fim.
+b.  Se o interesse fosse apenas reconhecer se o dígito é 5 ou não, que
+    modelo (com que parâmetros) seria utilizado? Justique sua resposta.
+
+### Respostas - Questão 2 {style="color: red"}
+
+::: {#RQ2 style="color:black;font-size:100%"}
+> Sejam as seguintes variáveis aleatórias:
+>
+> -   $X_1$: nº de digitos reconhecidos como 1;
+> -   $X_2$: nº de digitos reconhecidos como 2;
+> -   $X_3$: nº de digitos reconhecidos como 3;
+> -   $X_4$: nº de digitos reconhecidos como 4; e
+> -   $X_5$: nº de digitos reconhecidos como 5;
+>
+> Onde o vetor aleatório $X=(X_1,X_2,X_3,X_4,X_5)$, segue distribuição
+> multinomial com parâmetros $n=\sum_{i=1}^{5}X_i$ e
+> $\theta=(0.10,0.15,0.05,0.20,0.50)$ e denotado por:
+>
+> $$
+> X \sim Multi\Big(n,\theta=(0.10,0.15,0.05,0.20,0.50)\Big)
+> $$
+>
+> Com função de probabilidade:
+>
+> $$
+> P(X_1=n_1,X_2=n_2,X_3=n_3,X_4=n_4,X_5=n_5)=\\
+> \frac{n!}{n_1!\times n_2!\times n_3! \times n_4!\times n_5!}\times(\theta_1)^{n_1}\times(\theta_2)^{n_2}\times(\theta_3)^{n_3}\times(\theta_4)^{n_4}\times(\theta_5)^{n_5}
+> $$
+:::
+
+::: {#RQ2a style="color:black"}
+### **Letra a.** {style="color:black"}
+
+> $P(X_1=11,X_2=12,X_3=3,X_4=18,X_5=56)$, onde:
+> $X \sim Multi\Big(n=100,p=(0.10,0.15,0.05,0.20,0.50)\Big)$
+>
+> $P(X_1=11,X_2=12,X_3=3,X_4=18,X_5=56)=\\ =\frac{100!}{11!\times 12!\times 3!\times 18!\times 56!}\times(0.1)^{11}\times(0.15)^{12}\times(0.05)^3\times(0.2)^{18}\times(0.5)^{56}\\ = 0.0001054424$
+
+```{r}
+dmultinom(c(11,12,03,18,56), prob = c(0.1,0.15,0.05,0.20,0.50))
+# 
+```
+:::
+
+::: {#RQ2b style="color:black"}
+### **Letra b.** {style="color:black"}
+
+O medelo que pode descrever o reconhecimento de um determinado dígito
+ser 5 ou não em $n$ experimentos é descrito por meio de um modelo de
+Binomial. Onde:
+
+$X_5$ : V.A. Número de vezes em que o digito 5 é reconhecido com
+$X_5\sim Binomial(n=100,p=0.5)$
+
+Tal modelo justifica-se pelo fato de:
+$X_1,X_2,X_3,X_4,X_5 \sim Multi(n;\theta_1,\theta_2, \theta_5,\theta_5,\theta_5)$,
+então:
+
+$X_i \sim Binomial(n, \theta_i)$
+
+logo:
+
+$X_5 \sim Binomial(n, \theta_5)$
+
+Sendo $P(X=56)=0.03895256$
+
+```{r}
+dbinom(56,100,prob=0.5)
+```
+
+Alternativamente poderiamos coniderar:
+
+$X_1,X_2 \sim Mult(n=100; \theta_1=0.5, \theta_2=0.5)$
+
+com:
+
+-   $X_1$ : Número de vezes em que o digito 5 é reconhecido;
+-   $X_2$ : Número de vezes em que o digito 5 não é reconhecido.
+
+Assim temos que $P(X_1=56,X_2=44)=0.03895256$
+
+```{r}
+dmultinom(c(56,44), prob = c(0.5,0.5))
+```
+:::
+
+## Questão 3 {style="color:black"}
+
+Para o exemplo visto em aula do modelo *Poisson-Gama*, rode novamente o
+código em *R* assumindo os seguintes valores na distribuição Gama *a
+priori*:
+$(\alpha,\beta)=(80,4), (\alpha,\beta)=(10,0.5), (\alpha,\beta)=(4,0.2)$.
+O que podemos concluir a respeito das distribuição a priori, função de
+verossimilhança e distribuição a posteriori em cada caso? Note que ao
+rodar o código para que os gráficos possam ser melhor vistos, será
+necessário mudar a escala dentro do "curve" no comando "ylim", basta
+trocar o valor 0.13 por outro mais adequado.
+
+```{r echo=FALSE}
+x = 13
+
+```
+
+### Respostas - Questão 3 {style="color: red"}
+
+::: {style="color: black"}
+Sendo observadas que as médias a priori são as mesmas para os 3
+cenários, é possível observar que à medida que as estimativas de
+variâncias a priori vão subindo, o modelo a priori vai perdendo seu
+poder informativo.
+
+Levando a entender que quanto maior a variabilidade no modelo gama
+assumido a priori maior a tendência do modelo gama a posteriori se
+aproximar da verossimilhança, tendo em vista que sobredispersão
+existente $f_{X|Y=y}\to y\sim Poisson(\lambda=13)$ é tratada pela
+marginal X contida na definição da posteriori. 
+:::
+
+::: {style="color: black"}
+-   $Gama(\alpha= 80,\beta=4)$
+:::
+
+```{r echo=FALSE}
+# Priori
+alpha = 80 
+beta = 4
+
+vero = function(lambda){
+  fxdadoy = lambda^x*exp(-lambda)/factorial(x)
+  fx = (beta^alpha/(gamma(alpha)*factorial(x)))*gamma(alpha+x)/((beta+1)^(alpha+x))
+  fxdadoy/fx
+}
+k = 1/integrate(vero,0,50)$value
+
+# Posteriori
+alphapost = alpha+x
+betapost = beta+1
+
+curve(dgamma(x,alpha,beta),0,50,bty="n",lty=3,xlab="p",ylab="Densidade",ylim=c(0,0.35),col=2)
+curve(k*vero(x),add=TRUE)
+lines(c(x,x),c(-0.5,max(k*vero(x))))
+curve(dgamma(x,alphapost,betapost),add=TRUE,lty=2, col=4)
+legend(34,0.1,c("Priori","Verossimilhanca","Posteriori"),lty=c(3,1,2), col=c(2,1,4),cex =0.8)
+legend('topright', ncol = 5L,
+       legend=c(''     , 'Dado', 'Priori'     , 'Posteriori',
+                'Mean' , '13'  ,alpha/beta   , round(alphapost/(betapost),2),
+                'Var'  , '-'   ,alpha/beta^2 , round(alphapost/betapost^2,2),
+                'alpha', '-'   ,alpha        , alphapost,
+                'beta' , '-'   ,beta         , betapost), cex=0.6)
+```
+
+::: {style="color: black"}
+-   $Gama(\alpha= 10,\beta=0.5)$
+:::
+
+```{r echo=FALSE}
+# Priori
+alpha = 10 
+beta = 0.5
+
+vero = function(lambda){
+  fxdadoy = lambda^x*exp(-lambda)/factorial(x)
+  fx = (beta^alpha/(gamma(alpha)*factorial(x)))*gamma(alpha+x)/((beta+1)^(alpha+x))
+  fxdadoy/fx
+}
+k = 1/integrate(vero,0,50)$value
+
+# Posteriori
+alphapost = alpha+x
+betapost = beta+1
+
+curve(dgamma(x,alpha,beta),0,50,bty="n",lty=3,xlab="p",ylab="Densidade",ylim=c(0,0.35),col=2)
+curve(k*vero(x),add=TRUE)
+lines(c(x,x),c(-0.5,max(k*vero(x))))
+curve(dgamma(x,alphapost,betapost),add=TRUE,lty=2, col=4)
+legend(34,0.1,c("Priori","Verossimilhanca","Posteriori"),lty=c(3,1,2), col=c(2,1,4),cex =0.8)
+legend('topright', ncol = 5L,
+       legend=c(''     , 'Dado', 'Priori'     , 'Posteriori',
+                'Mean' , '13'  ,alpha/beta   , round(alphapost/(betapost),2),
+                'Var'  , '-'   ,alpha/beta^2 , round(alphapost/betapost^2,2),
+                'alpha', '-'   ,alpha        , alphapost,
+                'beta' , '-'   ,beta         , betapost), cex=0.6)
+```
+
+::: {style="color:black"}
+-   $Gama(\alpha= 4,\beta=0.2)$
+:::
+
+```{r echo=FALSE}
+# Priori
+alpha = 4 
+beta = 0.2
+
+vero = function(lambda){
+  fxdadoy = lambda^x*exp(-lambda)/factorial(x)
+  fx = (beta^alpha/(gamma(alpha)*factorial(x)))*gamma(alpha+x)/((beta+1)^(alpha+x))
+  fxdadoy/fx 
+}
+k = 1/integrate(vero,0,50)$value
+
+# Posteriori
+alphapost = alpha+x
+betapost = beta+1
+
+curve(dgamma(x,alpha,beta),0,50,bty="n",lty=3,xlab="p",ylab="Densidade",ylim=c(0,0.35),col=2)
+curve(k*vero(x),add=TRUE)
+lines(c(x,x),c(-0.5,max(k*vero(x))))
+curve(dgamma(x,alphapost,betapost),add=TRUE,lty=2, col=4)
+legend(34,0.1,c("Priori","Verossimilhanca","Posteriori"),lty=c(3,1,2), col=c(2,1,4),cex =0.8)
+legend('topright', ncol = 5L,
+       legend=c(''     , 'Dado', 'Priori'     , 'Posteriori',
+                'Mean' , '13'  ,alpha/beta   , round(alphapost/(betapost),2),
+                'Var'  , '-'   ,alpha/beta^2 , round(alphapost/betapost^2,2),
+                'alpha', '-'   ,alpha        , alphapost,
+                'beta' , '-'   ,beta         , betapost), cex=0.6)
+rm(list = ls())
+```

@@ -21,6 +21,8 @@ questão e ele acertar ou não, dado que sabe ou não.
 # Sejam os Eventos
 A<-c("Acertar","Nao Acertar")
 S<-c("Saber","Nao Saber")
+A
+S
 ```
 
 

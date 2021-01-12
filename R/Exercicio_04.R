@@ -153,3 +153,9 @@ punif(12,0,30)
 1-pexp(30,rate=1/15,lower.tail = FALSE)
 # (b)Qual o tempo mnimo de durac~ao dessa consulta com probabilidade de 80%?
 qexp(0.8,rate=1/15)
+
+#
+library(vistributions)
+vdist_launch_app()
+
+
